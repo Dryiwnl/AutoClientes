@@ -1,0 +1,45 @@
+# Certificados, Identificadores e Perfis
+
+## Editar a Configuração do App ID
+
+### Plataforma
+
+iOS, iPadOS, macOS, tvOS, watchOS, visionOS
+
+### Descrição
+
+Pinbox
+
+> Você não pode usar caracteres especiais como `@`, `&`, `*`, `"`
+
+### Prefixo do App ID
+
+`CRBJABASS6`  
+Team ID
+
+### Bundle ID
+
+`com.gizilkasa.pinBox`  
+Explícito
+
+---
+
+## Abas
+
+- Capacidades
+- Serviços do App
+- Solicitações
+
+---
+
+## Solicitações
+
+Pesquisar por nome / chave de entitlement / status
+
+| Solicitação | Nome | Status |
+|---|---|---|
+| Adicionar dispositivos ao Registro Automatizado de Dispositivos | Add Devices to Automated Device Enrollment | Sem solicitações |
+| Marketplace alternativo de apps | Alternative App Marketplace | Sem solicitações |
+| Configuração de Avaliação Automática | Automatic Assessment Configuration | Sem solicitações |
+| Instalação de App pelo Navegador | Browser App Installation | Sem solicitações |
+| Região da Câmera | Camera Region | Sem solicitações |

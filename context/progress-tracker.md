@@ -7,11 +7,14 @@ Atualize este arquivo após cada mudança de implementação significativa.
 - [x] Configuração do Projeto Inicial
 - [x] Desenvolvimento do Dashboard (MVP)
 - [x] Autenticação com Clerk
+- [x] Banco de Dados (Prisma + PostgreSQL) — Schema e migration inicial
+- [x] API REST de Projetos (spec `06-project-api.md`)
 - [ ] Desenvolvimento do Chat Público (MVP)
 - [ ] Integração com IA e Geração de Leads
 
 ## Meta Atual
-- Configurar banco de dados (Prisma + PostgreSQL) e criar Schema inicial; conectar formulário de atendente ao backend.
+- Conectar formulário de `assistant/page.tsx` a uma Server Action para salvar no banco.
+- API REST de projetos funcional (sem UI conectada ainda).
 
 ## Concluído
 - Documentação de contexto e arquitetura base criada.
@@ -35,15 +38,25 @@ Atualize este arquivo após cada mudança de implementação significativa.
   - `app/page.tsx` — redireciona autenticados para `/editor`, não autenticados para `/sign-in`.
   - `app/editor/page.tsx` — bridge temporário que redireciona para `/dashboard`.
   - `components/dashboard/user-menu.tsx` (client component) e `DashboardNavbar` atualizado com `UserButton` do Clerk.
+- **Banco de Dados (spec `05-prisma.md`):**
+  - `prisma/models/project.prisma` — models `Project` e `ProjectCollaborator` com relações, índices e enum `ProjectStatus`.
+  - Migration `20260503004100_init` criada e aplicada no banco Prisma Postgres.
+  - `lib/prisma.ts` — singleton com cache em `global` (dev hot reload). Ramifica em `accelerateUrl` para URLs `prisma+postgres://` e `@prisma/adapter-pg` para conexões diretas.
+  - Client gerado em `app/generated/prisma/`. Build passa sem erros.
+- **API REST de Projetos (spec `06-project-api.md`):**
+  - `app/api/projects/route.ts` — `GET` (listar projetos do usuário) e `POST` (criar projeto, nome padrão `Untitled Project`).
+  - `app/api/projects/[projectId]/route.ts` — `PATCH` (renomear) e `DELETE` (deletar).
+  - Todas as rotas usam `auth()` do Clerk; requisições sem sessão retornam `401`; mutações por não-donos retornam `403`.
+  - Entrada validada com Zod. Respostas consistentes: `{ data }` ou `{ error }`.
+  - `@prisma/extension-accelerate` instalado (dependência de `lib/prisma.ts` que faltava). Build passa sem erros.
 
 ## Em Progresso
 - *Nenhum no momento.*
 
 ## Próximos Passos
-1. Configurar o banco de dados (Prisma + PostgreSQL) e criar o Schema inicial (User, Store, Lead).
-2. Conectar o formulário de `assistant/page.tsx` a uma Server Action para salvar no banco.
-3. Implementar a criação real de leads durante o chat.
-4. Mover estrutura de rotas de `/dashboard` para rota base (alinhar com `app/(dashboard)/` conforme arquitetura).
+1. Conectar o formulário de `assistant/page.tsx` a uma Server Action para salvar no banco.
+2. Implementar a criação real de leads durante o chat.
+3. Mover estrutura de rotas de `/dashboard` para rota base (alinhar com `app/(dashboard)/` conforme arquitetura).
 
 ## Questões Abertas
 - Qual provedor de LLM vamos utilizar como padrão inicial (OpenAI `gpt-4o-mini` por custo-benefício ou Anthropic `claude-haiku-4-5`)?
@@ -69,3 +82,5 @@ Atualize este arquivo após cada mudança de implementação significativa.
 ## Notas da Sessão
 - Spec `02-editor.md` implementada integralmente. Apenas UI, sem backend, autenticação ou IA.
 - Spec `03-auth.md` implementada integralmente. Clerk integrado com proxy, ClerkProvider, páginas de auth e UserButton.
+- Spec `05-prisma.md` implementada integralmente. Schema multi-arquivo, migration aplicada, singleton Prisma v7 com adapter-pg.
+- Spec `06-project-api.md` implementada integralmente. 4 rotas REST (list/create/rename/delete), auth + ownership checks, Zod, sem conexão de UI.
