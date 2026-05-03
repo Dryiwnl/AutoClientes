@@ -1,5 +1,6 @@
-import { Settings, User } from "lucide-react";
+import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { UserMenu } from "./user-menu";
 
 interface DashboardNavbarProps {
   pageTitle?: string;
@@ -25,10 +26,7 @@ export function DashboardNavbar({ pageTitle }: DashboardNavbarProps) {
           <Settings className="h-4 w-4" />
           <span className="sr-only">Configurações</span>
         </Button>
-        <Button variant="ghost" size="icon" className="h-8 w-8 text-[var(--text-muted)] hover:text-[var(--text-primary)]">
-          <User className="h-4 w-4" />
-          <span className="sr-only">Perfil</span>
-        </Button>
+        <UserMenu />
       </div>
     </header>
   );
