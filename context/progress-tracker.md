@@ -6,11 +6,12 @@ Atualize este arquivo após cada mudança de implementação significativa.
 - [x] Planejamento / Contexto da IA criado
 - [x] Configuração do Projeto Inicial
 - [x] Desenvolvimento do Dashboard (MVP)
+- [x] Autenticação com Clerk
 - [ ] Desenvolvimento do Chat Público (MVP)
 - [ ] Integração com IA e Geração de Leads
 
 ## Meta Atual
-- Configurar banco de dados e autenticação; conectar formulário de atendente ao backend.
+- Configurar banco de dados (Prisma + PostgreSQL) e criar Schema inicial; conectar formulário de atendente ao backend.
 
 ## Concluído
 - Documentação de contexto e arquitetura base criada.
@@ -26,19 +27,28 @@ Atualize este arquivo após cada mudança de implementação significativa.
   - `app/dashboard/leads/page.tsx` — Estado vazio para leads.
   - `app/dashboard/chat-link/page.tsx` — Exibe link placeholder + botão de cópia visual.
 - **Página Pública do Atendente:** `app/a/[slug]/page.tsx` — Interface de chat responsiva com header fixo, área de mensagens e input fixo na base. Mensagem de boas-vindas estática.
+- **Autenticação com Clerk (spec `03-auth.md`):**
+  - `@clerk/ui` instalado; `dark` theme de `@clerk/ui/themes` aplicado ao `ClerkProvider`.
+  - `proxy.ts` criado na raiz (Next.js 16 renomeou middleware → proxy). Rotas protegidas por padrão; `/sign-in`, `/sign-up` e `/a/(.*)` são públicas.
+  - `app/layout.tsx` envolve toda a árvore com `ClerkProvider` com aparência via variáveis CSS do projeto (sem cores hardcoded).
+  - `app/sign-in/[[...sign-in]]/page.tsx` e `app/sign-up/[[...sign-up]]/page.tsx` — layout duas colunas (esquerda: logo + tagline + features em texto; direita: formulário Clerk). Apenas formulário em mobile.
+  - `app/page.tsx` — redireciona autenticados para `/editor`, não autenticados para `/sign-in`.
+  - `app/editor/page.tsx` — bridge temporário que redireciona para `/dashboard`.
+  - `components/dashboard/user-menu.tsx` (client component) e `DashboardNavbar` atualizado com `UserButton` do Clerk.
 
 ## Em Progresso
 - *Nenhum no momento.*
 
 ## Próximos Passos
 1. Configurar o banco de dados (Prisma + PostgreSQL) e criar o Schema inicial (User, Store, Lead).
-2. Configurar a biblioteca de autenticação (Clerk ou Supabase Auth).
-3. Conectar o formulário de `assistant/page.tsx` a uma Server Action para salvar no banco.
-4. Implementar a criação real de leads durante o chat.
+2. Conectar o formulário de `assistant/page.tsx` a uma Server Action para salvar no banco.
+3. Implementar a criação real de leads durante o chat.
+4. Mover estrutura de rotas de `/dashboard` para rota base (alinhar com `app/(dashboard)/` conforme arquitetura).
 
 ## Questões Abertas
 - Qual provedor de LLM vamos utilizar como padrão inicial (OpenAI `gpt-4o-mini` por custo-benefício ou Anthropic `claude-haiku-4-5`)?
 - A coleta do nome e telefone do lead no chat será feita por preenchimento natural na conversa com a IA, ou através de um formulário renderizado pela IA (UI generativa)?
+- O caminho `/editor` deve eventualmente hospedar o dashboard completo (alinhar `app/dashboard/` → `app/editor/`)?
 
 ## Decisões de Arquitetura
 - **Decisão:** Uso do Next.js App Router.
@@ -51,6 +61,11 @@ Atualize este arquivo após cada mudança de implementação significativa.
   **Motivo:** Necessário para destacar o item de navegação ativo sem duplicar lógica.
 - **Decisão:** Rota pública do chat em `app/a/[slug]/page.tsx` (não `app/[storeSlug]/`).
   **Motivo:** Evita conflito com outras rotas raiz futuras; prefixo `/a/` isola o namespace do chat público.
+- **Decisão:** `proxy.ts` na raiz (não `middleware.ts`).
+  **Motivo:** Next.js 16 renomeou middleware para proxy. Mesma funcionalidade, novo nome de arquivo.
+- **Decisão:** `UserMenu` como Client Component separado, `DashboardNavbar` permanece Server Component.
+  **Motivo:** `UserButton` do Clerk requer contexto client-side; isolar a fronteira no menor componente possível.
 
 ## Notas da Sessão
 - Spec `02-editor.md` implementada integralmente. Apenas UI, sem backend, autenticação ou IA.
+- Spec `03-auth.md` implementada integralmente. Clerk integrado com proxy, ClerkProvider, páginas de auth e UserButton.
